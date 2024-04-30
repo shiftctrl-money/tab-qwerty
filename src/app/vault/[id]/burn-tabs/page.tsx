@@ -29,8 +29,8 @@ useWaitForTransactionReceipt({
 }) 
 
   
-let wBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239"
-let rAmount =  getAmountOut(wBtc,reserveAmount)
+let cBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239"
+let rAmount =  getAmountOut(cBtc,reserveAmount)
 
 
 
@@ -114,7 +114,7 @@ useEffect(()=>{
                   placeholder="Enter a burn amount"
                 />
                 <div className="absolute px-4 inset-y-0 right-0 flex items-center">
-                  wBTC
+                  cBTC
                 </div>
               </div>
               <p className="text-sm my-4">Available For Burn:   {balance} {tokenName} </p>
@@ -190,10 +190,10 @@ useEffect(()=>{
                     <div className="my-4">
                       <p className="text-black text-sm">Reserve</p>
                       <p className="text-lg text-black font-medium">
-                      { formatEther(data?.[1]||"0") } wBTC
+                      { formatEther(data?.[1]||"0") } cBTC
                       </p>
                       <p className="text-black text-sm">
-                        Currently:  { formatEther(data?.[1]||"0") } wBTC
+                        Currently:  { formatEther(data?.[1]||"0") } cBTC
                       </p>
                     </div>
                   </div>

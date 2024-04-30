@@ -27,7 +27,7 @@ let tokenName ;
     <td className="px-6 py-4"> </td>
     <td className="px-6 py-4">50,000.00 {tokenName}</td>
     <td className="px-6 py-4">{formatEther(data[4])} {tokenName}</td>
-    <td className="px-6 py-4">{formatEther(data[1])} wBTC</td>
+    <td className="px-6 py-4">{formatEther(data[1])} cBTC</td>
   </tr>
   )
 }

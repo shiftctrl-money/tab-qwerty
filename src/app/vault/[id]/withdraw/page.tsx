@@ -28,9 +28,9 @@ useWaitForTransactionReceipt({
 }) 
 
   
-let wBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239"
-const balance = getBalanceOfToken(address,wBtc)
-let rAmount =  getAmountOut(wBtc,reserveAmount)
+let cBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239"
+const balance = getBalanceOfToken(address,cBtc)
+let rAmount =  getAmountOut(cBtc,reserveAmount)
 
 
 
@@ -105,10 +105,10 @@ useEffect(()=>{
                   placeholder="Enter a withdraw amount"
                 />
                 <div className="absolute px-4 inset-y-0 right-0 flex items-center">
-                  wBTC
+                  cBTC
                 </div>
               </div>
-              <p className="text-sm my-4">Available:   { formatEther(data?.[1]||"0") } wBTC </p>
+              <p className="text-sm my-4">Available:   { formatEther(data?.[1]||"0") } cBTC </p>
               <button
                 onClick={handleWithdraw}
                 className="mt-10 w-full bg-black text-white py-2 px-5 rounded-3xl"
@@ -181,10 +181,10 @@ useEffect(()=>{
                     <div className="my-4">
                       <p className="text-black text-sm">Reserve</p>
                       <p className="text-lg text-black font-medium">
-                      { formatEther(data?.[1]||"0") } wBTC
+                      { formatEther(data?.[1]||"0") } cBTC
                       </p>
                       <p className="text-black text-sm">
-                        Currently:  { formatEther(data?.[1]||"0") } wBTC
+                        Currently:  { formatEther(data?.[1]||"0") } cBTC
                       </p>
                     </div>
                   </div>

@@ -45,7 +45,7 @@ export const MintTabsForm = () => {
           placeholder="Enter a deposit amount"
         />
         <div className="absolute px-4 inset-y-0 right-0 flex items-center">
-          wBTC
+          
         </div>
       </div>
       <p className="text-sm my-4">Available: 2.123456789012345678</p>

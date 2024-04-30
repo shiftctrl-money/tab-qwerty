@@ -93,7 +93,7 @@ if(!data ) return<></>
                         <div className="my-2">
                           <p className="text-black text-sm">Reserves</p>
                           <p className="text-lg text-black font-medium">
-        { formatEther(data?.[1])} wBTC
+        { formatEther(data?.[1])} 
                           </p>
                         </div>
                         <div className="my-2">
@@ -273,7 +273,7 @@ const TableContent = () => {
                 <p className="py-2 text-black">Mint tabs</p>
               </td>
               <td className="px-6 py-4">
-                <p className="py-2 text-black">0.123456789012345678 wBTC</p>
+                <p className="py-2 text-black">0.123456789012345678 </p>
                 <p className="py-2 text-black">
                   10,000.123456789012345678 sUSD
                 </p>
@@ -299,7 +299,7 @@ const TableContent = () => {
                 <p className="py-2 text-black">Deposit reserves </p>
               </td>
               <td className="px-6 py-4">
-                <p className="py-2 text-black">0.123456789012345678 wBTC</p>
+                <p className="py-2 text-black">0.123456789012345678 cBTC</p>
               </td>
             </tr>
             <tr className="odd:bg-[#F9F9F9] even:bg-white ">
@@ -325,7 +325,7 @@ const TableContent = () => {
               </td>
               <td className="px-6 py-4">
                 <p className="py-2 text-black">vault 12345678</p>
-                <p className="py-2 text-black">0.123456789012345678 wBTC</p>
+                <p className="py-2 text-black">0.123456789012345678 cBTC</p>
                 <p className="py-2 text-black">
                   10,000.123456789012345678 sUSD
                 </p>

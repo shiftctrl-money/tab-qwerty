@@ -26,11 +26,11 @@ useWaitForTransactionReceipt({
   hash
 }) 
 
-let wBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239"
+let cBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239"
 
-const balance = getBalanceOfToken(address,wBtc)
+const balance = getBalanceOfToken(address,cBtc)
 
-let rAmount =  getAmountOut(wBtc,reserveAmount)
+let rAmount =  getAmountOut(cBtc,reserveAmount)
 let tabCount = TabCount() || [];
 console.log(tabCount)
 
@@ -64,7 +64,7 @@ throw new Error("Not enough token balance!");
 
     await writeContractAsync({
       abi:erc20Abi,
-      address:wBtc,
+      address:cBtc,
       functionName:"approve",
       args:[VAULT_MANAGER_CONFIG.address, rAmount.toString()]
     })
@@ -163,7 +163,7 @@ console.log(isError)
               placeholder="Enter a deposit amount"
             />
             <div className="absolute px-4 inset-y-0 right-0 flex items-center">
-              wBTC
+              cBTC
             </div>
           </div>
           <p className="text-sm my-4">Available: {balance}</p>
