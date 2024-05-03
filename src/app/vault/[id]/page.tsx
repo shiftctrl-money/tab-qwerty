@@ -1,21 +1,24 @@
 "use client";
+import getTokenName from "@/hooks/getTokenName";
 import getVaultData from "@/hooks/getVaultData";
 import { customTabTheme, dpCustomTheme } from "@/theme/CustomTabTheme";
-import { CustomFlowbiteTheme, Datepicker, Select, Tabs } from "flowbite-react";
+import { Datepicker, Select, Tabs } from "flowbite-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
-export default function SingleVault({params}) {
-  console.log(params.id)
-  let {id} =params;
+export default function SingleVault({ params }: { params: any }) {
+  console.log(params.id);
+  let { id } = params;
   const router = useRouter();
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
 
-const data = getVaultData(address, id)
-console.log(data)
-if(!data ) return<></>
+  const data: any = getVaultData(address, id);
+  const tokenName = getTokenName(data ? data[2] : 0);
+
+  console.log(data);
+  if (!data) return <></>;
   return (
     <>
       <div className="container mx-auto min-h-[80vh] my-10">
@@ -27,7 +30,9 @@ if(!data ) return<></>
             <ArrowIcon />
           </button>
         </div>
-        <h1 className="mt-6 text-4xl font-bold">sUSD vault #{id}</h1>
+        <h1 className="mt-6 text-4xl font-bold">
+          {tokenName} protocol vault #{id}
+        </h1>
         <div className="grid grid-cols-1 gap-4">
           <div className="col-start-1 col-span-2">
             <Tabs
@@ -93,18 +98,18 @@ if(!data ) return<></>
                         <div className="my-2">
                           <p className="text-black text-sm">Reserves</p>
                           <p className="text-lg text-black font-medium">
-        { formatEther(data?.[1])} 
+                            {formatEther(data?.[1])} cBTC
                           </p>
                         </div>
                         <div className="my-2">
                           <p className="text-black text-sm">Reserve value</p>
                           <p className="text-lg text-black font-medium">
-                          { formatEther(data?.[3])}   USD
+                            {formatEther(data?.[3])} USD
                           </p>
                         </div>
                         <div className="mt-8 mb-2 flex flex-col">
                           <Link
-                            href={id+"/deposit"}
+                            href={id + "/deposit"}
                             className="text-center w-100 bg-black text-white rounded-3xl py-3"
                           >
                             Deposit reserves
@@ -113,7 +118,7 @@ if(!data ) return<></>
                         <div className="my-3">
                           <div className="text-center">
                             <Link
-                              href={id+"/withdraw"}
+                              href={id + "/withdraw"}
                               className="border-b-2 border-black pb-1"
                             >
                               Withdraw reserves
@@ -137,7 +142,7 @@ if(!data ) return<></>
                         <div className="my-2">
                           <p className="text-black text-sm">Minted tabs</p>
                           <p className="text-lg text-black font-medium">
-                          { formatEther(data?.[4])} sUSD
+                            {formatEther(data?.[4])} sUSD
                           </p>
                         </div>
                         <div className="my-2">
@@ -149,7 +154,7 @@ if(!data ) return<></>
                         <div className="mt-[25%]">
                           <div className="mt-8 mb-2 flex flex-col">
                             <Link
-                              href={id+"/burn-tabs"}
+                              href={id + "/burn-tabs"}
                               className="text-center w-100 bg-black text-white rounded-3xl py-3"
                             >
                               Burn tabs
@@ -158,7 +163,7 @@ if(!data ) return<></>
                           <div className="my-3">
                             <div className="text-center">
                               <Link
-                                href={id+"/mint-tabs"}
+                                href={id + "/mint-tabs"}
                                 className="border-b-2 border-black pb-1"
                               >
                                 Mint Tabs
@@ -273,7 +278,7 @@ const TableContent = () => {
                 <p className="py-2 text-black">Mint tabs</p>
               </td>
               <td className="px-6 py-4">
-                <p className="py-2 text-black">0.123456789012345678 </p>
+                <p className="py-2 text-black">0.123456789012345678 cBTC</p>
                 <p className="py-2 text-black">
                   10,000.123456789012345678 sUSD
                 </p>

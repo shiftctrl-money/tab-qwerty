@@ -7,6 +7,6 @@ function getAllVaultIDByOwner(user: any) {
     functionName: "getAllVaultIDByOwner",
     args: [user],
   });
-  return data;
+  return data as [];
 }
 export default getAllVaultIDByOwner;

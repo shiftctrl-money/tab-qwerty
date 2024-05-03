@@ -11,8 +11,10 @@ import getBalanceOfToken from "@/hooks/getBalanceOfToken";
 import { useTabCount } from "@/hooks/getTabCount";
 import { VAULT_MANAGER_CONFIG } from "@/app/helpers/index";
 import toast from "react-hot-toast";
+import { Button, Modal } from "flowbite-react";
+import Link from "next/link";
 
-const cBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
+const cBTC = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
 
 export const CreateVaultForm = () => {
   const { address, isConnected } = useAccount();
@@ -22,12 +24,17 @@ export const CreateVaultForm = () => {
     "0x6588b8894fca8cf664a5104c02483d947c24df3a4f2069053c798bcba9b23870"
   );
   const [reserveAmount, setReserveAmount] = useState("0");
+  const [openModal, setOpenModal] = useState(false);
+  const [openLoadingModal, setOpenLoadingModal] = useState(false);
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+
   const {
     data: hash,
     error,
     writeContract,
     writeContractAsync,
   } = useWriteContract();
+
   const {
     isLoading: isConfirming,
     isSuccess: isConfirmed,
@@ -38,11 +45,12 @@ export const CreateVaultForm = () => {
 
   const { tabList: tabCount, error: tabCountError } = useTabCount();
 
-  const balance = getBalanceOfToken(address as Address, cBtc);
+  const balance = getBalanceOfToken(address as Address, cBTC);
 
-  const rAmount = getAmountOut(cBtc, reserveAmount);
+  const rAmount = getAmountOut(cBTC, reserveAmount);
 
   const createVault = async () => {
+    setOpenLoadingModal(true);
     try {
       if (!address || !isConnected) {
         throw new Error("Please connect your wallet");
@@ -61,7 +69,7 @@ export const CreateVaultForm = () => {
 
       await writeContractAsync({
         abi: erc20Abi,
-        address: cBtc,
+        address: cBTC,
         functionName: "approve",
         args: [VAULT_MANAGER_CONFIG.address, BigInt(rAmount.toString())],
       });
@@ -97,8 +105,8 @@ export const CreateVaultForm = () => {
     return result;
   }
   useEffect(() => {
-    if (isConfirmed) toast.success;
-    toast.success("Transaction has been successfully completed.");
+    if (isConfirmed)
+      toast.success("Transaction has been successfully completed.");
   }, [isConfirmed]);
 
   useEffect(() => {
@@ -111,6 +119,41 @@ export const CreateVaultForm = () => {
     <>
       <div className="">
         <div className="py-2">
+          <label className="text-sm font-medium">Tab currency</label>
+          <div className="relative mt-2 rounded-md shadow-sm">
+            {tabCount?.length > 0 ? (
+              <>
+                <select
+                  onChange={(e) => setTab(e.target.value)}
+                  id="countries"
+                  className="block w-full rounded-xl border-0 py-2 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+                  value={tab}
+                >
+                  <option value="000" disabled selected>
+                    Select a tab
+                  </option>
+                  {tabCount?.map((item) => (
+                    <option key={item} value={item}>
+                      {bytes3ToString(item)}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <DownArrow />
+                </div>
+              </>
+            ) : (
+              <input
+                type="text"
+                className="block w-full rounded-xl border-0 py-1.5 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                disabled
+                value={"Loading tab data...."}
+              />
+            )}
+            {tabCountError && <p>Error: {tabCountError.message}</p>}
+          </div>
+        </div>
+        <div className="py-2">
           <label className="text-sm font-medium">Reserve type</label>
           <div className="relative mt-2 rounded-md shadow-sm">
             <select
@@ -118,13 +161,15 @@ export const CreateVaultForm = () => {
                 setReserveType(keccak256(toBytes(e?.target.value)))
               }
               id="countries"
-              className="block w-full rounded-xl border-0 py-2 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+              className="block w-full rounded-xl border-0 py-2 pl-4 pr-8 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
             >
-              {" "}
               <option value={"CBTC"} selected>
                 CBTC
               </option>
             </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <DownArrow />
+            </div>
           </div>
         </div>
         <div className="py-2">
@@ -137,39 +182,22 @@ export const CreateVaultForm = () => {
               id="price"
               className="block w-full rounded-xl border-0 py-1.5 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
               placeholder="Enter a deposit amount"
+              value={reserveAmount}
             />
             <div className="absolute px-4 inset-y-0 right-0 flex items-center">
               cBTC
             </div>
           </div>
-          <p className="text-sm my-4">Available: {balance ? balance : 0}</p>
-        </div>
-        <div className="py-2">
-          <label className="text-sm font-medium">Tab currency</label>
-          <div className="relative mt-2 rounded-md shadow-sm">
-            {tabCount?.length > 0 ? (
-              <select
-                onChange={(e) => setTab(e.target.value)}
-                id="countries"
-                className="block w-full rounded-xl border-0 py-2 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
-                value={tab}
-              >
-                <option value="000" disabled selected>
-                  Select a tab
-                </option>
-                {tabCount?.map((item) => (
-                  <option key={item} value={item}>
-                    {bytes3ToString(item)}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <p>Loading tab data....</p>
-            )}
-            {tabCountError && <p>Error: {tabCountError.message}</p>}
+          <div className="mx-auto flex justify-between items-center">
+            <p className="text-sm my-4">Available: {balance ? balance : 0}</p>
+            <button
+              className="underline "
+              onClick={() => setReserveAmount(balance!)}
+            >
+              Max
+            </button>
           </div>
         </div>
-
         <div className="py-2">
           <label className="text-sm font-medium">Tab amount</label>
           <div className="relative mt-2 rounded-md shadow-sm">
@@ -178,7 +206,7 @@ export const CreateVaultForm = () => {
               type="number"
               name="price"
               id="price"
-              className="block w-full rounded-xl border-0 py-1.5 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+              className="block w-full rounded-xl border-0 py-1.5 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
               placeholder="Enter a deposit amount"
             />
           </div>
@@ -187,12 +215,147 @@ export const CreateVaultForm = () => {
         {isConfirming && <div>Waiting for confirmation...</div>}
         {isConfirmed && <div>Transaction confirmed.</div>}
         <button
-          onClick={createVault}
+          onClick={() => setOpenModal(true)}
           className="mt-10 w-full bg-black text-white py-2 px-5 rounded-3xl"
         >
           Create vault
         </button>
       </div>
+
+      {/* details modal */}
+      <Modal show={openModal} onClose={() => setOpenModal(false)}>
+        <Modal.Header className="border-0 pb-1">
+          <p className="text-3xl">Confirmation</p>
+        </Modal.Header>
+        <Modal.Body className="pt-2">
+          <div className="space-y-6">
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              Please review and confirm the details of your sUSD vault.
+            </p>
+            <div>
+              <div className="flex gap-10">
+                <div>
+                  <p className="text-gray-500 dark:text-gray-400 py-2">
+                    Reserve type
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 py-2">
+                    Deposit amount
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 py-2">
+                    Mint amount
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 py-2">
+                    Reserve ratio
+                  </p>
+                  <p className="text-gray-500 dark:text-gray-400 py-2">
+                    Liquidation price
+                  </p>
+                </div>
+                <div>
+                  <p className="font-semibold	 py-2">wBTC</p>
+                  <p className="font-semibold	 py-2">
+                    0.500000000000000000 wBTC
+                  </p>
+                  <p className="font-semibold	 py-2">
+                    10,000.000000000000000000 sUSD
+                  </p>
+                  <p className="font-semibold	 py-2">276.19%</p>
+                  <p className="font-semibold	 py-2">
+                    12,200.123456789012345678 sUSD
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-end border-0">
+          <button
+            className="bg-white text-black py-3 px-5 rounded-3xl border border-black"
+            onClick={() => setOpenModal(false)}
+          >
+            Back
+          </button>
+          <button
+            className="bg-black text-white py-3 px-5 rounded-3xl"
+            color="gray"
+            onClick={createVault}
+          >
+            Create vault
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* loading modal */}
+      <Modal show={openLoadingModal} onClose={() => setOpenLoadingModal(false)}>
+        <Modal.Header className="border-0 pb-1"></Modal.Header>
+        <Modal.Body className="pt-2">
+          <div className="space-y-4">
+            <p className=" leading-relaxed text-black text-3xl text-center mt-10">
+              Creating your vault
+            </p>
+            <p className="text-center">
+              Your vault along with your minted tabs will be ready soon
+            </p>
+            <p className="text-center">
+              <Link className="underline" href={"#"}>
+                View on Zkscan
+              </Link>
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* success modal */}
+      <Modal show={openSuccessModal} onClose={() => setOpenSuccessModal(false)}>
+        <Modal.Header className="border-0 pb-1"></Modal.Header>
+        <Modal.Body className="pt-2">
+          <div className="space-y-4">
+            <p className=" leading-relaxed text-black text-3xl text-center mt-10">
+              Vault successfully created!
+            </p>
+            <p className="text-center">Vault 00000001 successfully created. </p>
+            <p className="text-center">
+              <Link className="underline" href={"#"}>
+                View on Zkscan
+              </Link>
+            </p>
+            <div>
+              <Link href={"#"}>Go to vault</Link>
+            </div>
+            <div>
+              <p className="underline">close</p>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
+  );
+};
+
+const DownArrow = () => {
+  return (
+    <svg
+      width={20}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        {" "}
+        <path
+          d="M7 10L12 15L17 10"
+          stroke="#000000"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>{" "}
+      </g>
+    </svg>
   );
 };

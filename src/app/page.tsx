@@ -35,8 +35,7 @@ export default function Home() {
             <div className="max-w-full">
               <div className="bg-[#FB5108] p-5 rounded-3xl">
                 <div className="relative">
-                  <img src="/assets/coin.png" className="my-4" />
-                  <div className="absolute top-0 left-0 w-full h-full bg-[#FB5108] opacity-50"></div>
+                  <img src="/assets/SoundIcon.png" className="my-4" />
                 </div>
                 <p className="text-white text-3xl">sUSD</p>
                 <div className="flex mt-2">
@@ -77,8 +76,7 @@ export default function Home() {
             <div className="max-w-full">
               <div className="bg-[#161616] p-5 rounded-3xl">
                 <div className="relative">
-                  <img src="/assets/coin.png" className="my-4" />
-                  <div className="absolute top-0 left-0 w-full h-full bg-[#161616] opacity-50"></div>
+                  <img src="/assets/SoundIcon.png" className="my-4" />
                 </div>
                 <p className="text-white text-3xl">sUSD</p>
                 <div className="flex mt-2">
@@ -119,8 +117,7 @@ export default function Home() {
             <div className="max-w-full">
               <div className="bg-[#2B393B] p-5 rounded-3xl">
                 <div className="relative">
-                  <img src="/assets/coin.png" className="my-4" />
-                  <div className="absolute top-0 left-0 w-full h-full bg-[#2B393B] opacity-50"></div>
+                  <img src="/assets/SoundIcon.png" className="my-4" />
                 </div>
                 <p className="text-white text-3xl">sUSD</p>
                 <div className="flex mt-2">
@@ -248,7 +245,7 @@ const TableContent = () => {
               <tr key={i} className="border-t-2">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
-                    <img src="/assets/coin.png" className="w-6" />
+                    <img src="/assets/SoundIcon.png" className="w-6" />
                     <p className="text-black">Sound United States Dollar</p>
                   </div>
                 </td>

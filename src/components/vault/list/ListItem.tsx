@@ -6,11 +6,8 @@ import Link from "next/link";
 import { formatEther } from "viem";
 export const ListItem = ({ address, id }: { address: any; id: any }) => {
   const data: any = getVaultData(address, id) || [];
-  let tokenName;
+  const tokenName = getTokenName(data[2] || 0);
 
-  tokenName = getTokenName(data[2] || 0);
-
-  console.log(data, tokenName);
   if (data?.length < 1) return <></>;
   return (
     <tr className="odd:bg-[#F9F9F9] even:bg-white ">
@@ -23,7 +20,9 @@ export const ListItem = ({ address, id }: { address: any; id: any }) => {
       </td>
       <td className="px-6 py-4">Sounds United States Dollar</td>
       <td className="px-6 py-4"> </td>
-      <td className="px-6 py-4">50,000.00 {tokenName}</td>
+      <td className="px-6 py-4">
+        {data[3]} {tokenName}
+      </td>
       <td className="px-6 py-4">
         {formatEther(data[4])} {tokenName}
       </td>
