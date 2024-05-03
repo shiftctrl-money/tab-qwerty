@@ -1,12 +1,12 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import getAllVaultIDByOwner from "@/hooks/getAllVaultsOfUser"
-import ListItem from "@/components/vault/list/ListItem"
+import getAllVaultIDByOwner from "@/hooks/getAllVaultsOfUser";
+import { ListItem } from "@/components/vault/list/ListItem";
 export const UserVaultsTable = () => {
-  const { address, isConnected } = useAccount();
-const vaultList = getAllVaultIDByOwner(address)
-console.log(vaultList)
+  const { address } = useAccount();
+  const vaultList: any = getAllVaultIDByOwner(address);
+  console.log(vaultList);
 
   return (
     <>
@@ -35,115 +35,9 @@ console.log(vaultList)
             </tr>
           </thead>
           <tbody>
-       { vaultList?.map(id=> <ListItem id={id} address={address}/> )}
-            {/* <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr>
-            <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr>
-            <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr>
-            <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr>
-            <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr>
-            <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr>
-            <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr>
-            <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr>
-            <tr className="odd:bg-[#F9F9F9] even:bg-white rounded-xl">
-              <td className="px-6 py-4">
-                <div className="px-3 py-2 bg-[#CBD2DA] rounded-[100px]">
-                  <p className="mx-auto text-center text-black">#12345678</p>
-                </div>
-              </td>
-              <td className="px-6 py-4">Sounds United States Dollar</td>
-              <td className="px-6 py-4">270%</td>
-              <td className="px-6 py-4">50,000.00 sUSD</td>
-              <td className="px-6 py-4">100,000.00 sUSD</td>
-              <td className="px-6 py-4">10.0000000000 wBTC</td>
-            </tr> */}
+            {vaultList?.map((id: any) => (
+              <ListItem id={id} address={address} />
+            ))}
           </tbody>
         </table>
       </div>

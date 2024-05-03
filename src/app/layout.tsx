@@ -8,7 +8,9 @@ import { WagmiProvider } from "wagmi";
 import { arbitrumSepolia, mainnet } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Footer } from "@/components/Footer";
-import 'sweetalert2/src/sweetalert2.scss'
+import "sweetalert2/src/sweetalert2.scss";
+import { Toaster } from "react-hot-toast";
+
 const inter = Inter({ subsets: ["latin"] });
 
 const config = getDefaultConfig({
@@ -30,7 +32,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider>  
+            <RainbowKitProvider>
+              <Toaster />
               <Header />
               {children}
               <Footer />
