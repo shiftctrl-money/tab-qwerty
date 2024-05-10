@@ -6,90 +6,79 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import Swal from 'sweetalert2'
+import {
+  useAccount,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import Swal from "sweetalert2";
 import { VAULT_MANAGER_CONFIG } from "@/app/helpers";
 import { erc20Abi, formatEther, parseEther } from "viem";
 import getVaultData from "@/hooks/getVaultData";
 import getTokenName from "@/hooks/getTokenName";
+import toast from "react-hot-toast";
 
-export default function Deposit({params}) {
-  console.log(params.id)
-  let {id} =params;
+export default function Deposit({ params }: { params: any }) {
+  console.log(params.id);
+  let { id } = params;
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
-const [reserveAmount,setReserveAmount] =useState("0")
+  const [reserveAmount, setReserveAmount] = useState("0");
 
-const { address, isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
 
-const {data:hash,error,writeContract, writeContractAsync} = useWriteContract()
-const { isLoading: isConfirming, isSuccess: isConfirmed,error:iserror } = 
-useWaitForTransactionReceipt({ 
-  hash
-}) 
+  const {
+    data: hash,
+    error,
+    writeContract,
+    writeContractAsync,
+  } = useWriteContract();
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: iserror,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
 
-  
-let cBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239"
-let rAmount =  getAmountOut(cBtc,reserveAmount)
+  let cBTC = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
+  let rAmount = getAmountOut(cBTC, reserveAmount);
 
+  const data: any = getVaultData(address, id) || [];
+  console.log(data);
+  const balance = getBalanceOfToken(address || "", data[2]);
 
+  const tokenName = getTokenName(data[2]);
+  console.log(tokenName);
+  console.log(error);
 
-const data = getVaultData(address,id)||[]
-console.log(data)
-const balance = getBalanceOfToken(address,data[2])
-
-const tokenName = getTokenName(data[2])
-console.log(tokenName)
-console.log(error)
-
-useEffect(()=>{
-  if(error){
-    Swal.fire(error.shortMessage.split(":")[1]|| error.message || "Transaction reverted unexpectedly")
-  }
-},[error])
-const handleMint= async () =>  {
-
-  try{
-
-Swal.fire({
-
-  title:"Check your wallet to approve transaction",
-  didOpen: () => {
-    Swal.showLoading();
-  
-  },
-})
-  if (!address || !isConnected) {
-    alert("Please connect your wallet");
-    return;
-  }
-
-  
-
-  // await writeContractAsync({
-  //   abi:erc20Abi,
-  //   address:data[2],
-  //   functionName:"approve",
-  //   args:[VAULT_MANAGER_CONFIG.address, rAmount.toString()]
-  // })
-writeContract({
-...VAULT_MANAGER_CONFIG,
-functionName:"adjustTab",
-args:[id,rAmount,true]
-})
-}catch(err){
-console.log(err)
-Swal.fire({
-  icon: "error",
-  title: "Something went wrong",
-  text: err?.shortMessage || err?.message,
-  footer: '<a href="#">Why do I have this issue?</a>'
-});}
-
-}; 
-useEffect(()=>{
-  if(isConfirmed){setOpen(true); Swal.close();  window.location.reload()}
-},[isConfirmed])
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message || "Transaction reverted unexpectedly");
+    }
+  }, [error]);
+  const handleMint = async () => {
+    try {
+      toast.loading("Check your wallet to approve transaction");
+      if (!address || !isConnected) {
+        toast.error("Please connect your wallet");
+        return;
+      }
+      writeContract({
+        ...VAULT_MANAGER_CONFIG,
+        functionName: "adjustTab",
+        args: [id, rAmount, true],
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong");
+    }
+  };
+  useEffect(() => {
+    if (isConfirmed) {
+      setOpen(true);
+    }
+  }, [isConfirmed]);
   return (
     <>
       <div className="container mx-auto min-h-[80vh] my-10">
@@ -105,25 +94,27 @@ useEffect(()=>{
           <div className="col-span-2">
             <h1 className="mt-6 text-4xl font-bold">Mint tab currencies</h1>
             <p className="mt-3 mb-10 text-sm">
-              Use the simulation on the right to determine the ideal mint
-              amount for you.
+              Use the simulation on the right to determine the ideal mint amount
+              for you.
             </p>
             <div>
               <label className="text-sm font-medium">Mint amount</label>
               <div className="relative mt-2 rounded-md shadow-sm">
                 <input
                   type="Number"
-                  onChange={(e)=> setReserveAmount(e.currentTarget.value)}
+                  onChange={(e) => setReserveAmount(e.currentTarget.value)}
                   name="price"
                   id="price"
                   className="block w-full rounded-xl border-0 py-1.5 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                   placeholder="Enter a mint amount"
                 />
                 <div className="absolute px-4 inset-y-0 right-0 flex items-center">
-                  cBTC
+                  {tokenName}
                 </div>
               </div>
-              <p className="text-sm my-4">Available For Mint:   {balance} {tokenName} </p>
+              <p className="text-sm my-4">
+                Available For Mint: {balance} {tokenName}{" "}
+              </p>
               <button
                 onClick={handleMint}
                 className="mt-10 w-full bg-black text-white py-2 px-5 rounded-3xl"
@@ -187,7 +178,7 @@ useEffect(()=>{
                     <div className="my-4">
                       <p className="text-black text-sm">Tab</p>
                       <p className="text-lg text-black font-medium">
-                       { formatEther(data?.[3]||"0") } sUSD
+                        {formatEther(data?.[3] || "0")} sUSD
                       </p>
                       <p className="text-black text-sm">
                         Currently: 30,000.1234 sUSD
@@ -196,10 +187,10 @@ useEffect(()=>{
                     <div className="my-4">
                       <p className="text-black text-sm">Reserve</p>
                       <p className="text-lg text-black font-medium">
-                      { formatEther(data?.[1]||"0") } cBTC
+                        {formatEther(data?.[1] || "0")} cBTC
                       </p>
                       <p className="text-black text-sm">
-                        Currently:  { formatEther(data?.[1]||"0") } cBTC
+                        Currently: {formatEther(data?.[1] || "0")} cBTC
                       </p>
                     </div>
                   </div>

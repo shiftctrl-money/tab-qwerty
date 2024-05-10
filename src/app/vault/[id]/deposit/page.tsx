@@ -6,89 +6,72 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import Swal from 'sweetalert2'
+import {
+  useAccount,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import Swal from "sweetalert2";
 import { VAULT_MANAGER_CONFIG } from "@/app/helpers";
-import { erc20Abi, formatEther, parseEther } from "viem";
+import { Address, erc20Abi, formatEther, parseEther } from "viem";
 import getVaultData from "@/hooks/getVaultData";
+import toast from "react-hot-toast";
 
-export default function Deposit({params}) {
-  console.log(params.id)
-  let {id} =params;
+export default function Deposit({ params }: { params: any }) {
+  let { id } = params;
   const router = useRouter();
+  const [reserveAmount, setReserveAmount] = useState("0");
+
+  const { address, isConnected } = useAccount();
   const [open, setOpen] = useState<boolean>(false);
-const [reserveAmount,setReserveAmount] =useState("0")
 
-const { address, isConnected } = useAccount();
+  const { data: hash, writeContract, writeContractAsync } = useWriteContract();
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: iserror,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
 
-const {data:hash,error,writeContract, writeContractAsync} = useWriteContract()
-const { isLoading: isConfirming, isSuccess: isConfirmed,error:iserror } = 
-useWaitForTransactionReceipt({ 
-  hash
-}) 
+  let cBTC = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
+  const balance = getBalanceOfToken(address || "", cBTC);
+  let rAmount = getAmountOut(cBTC, reserveAmount);
 
-  
-let cBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239"
-const balance = getBalanceOfToken(address,cBtc)
-let rAmount =  getAmountOut(cBtc,reserveAmount)
+  const data: any = getVaultData(address, id);
+  const handleDeposit = async () => {
+    try {
+      if (!address || !isConnected) {
+        toast.error("Please connect your wallet");
+        return;
+      }
 
+      await writeContractAsync({
+        abi: erc20Abi,
+        address: cBTC as Address,
+        functionName: "approve",
+        args: [VAULT_MANAGER_CONFIG.address, BigInt(rAmount)],
+      });
 
+      toast.loading("Check your wallet to approve transaction");
 
-const data = getVaultData(address,id)
-console.log(data)
-const handleDeposit = async () =>  {
+      writeContract({
+        ...VAULT_MANAGER_CONFIG,
+        functionName: "adjustReserve",
+        args: [id, rAmount, false],
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong");
+    }
+  };
 
-  try{
+  useEffect(() => {
+    if (isConfirmed) {
+      setOpen(true);
+    }
+  }, [isConfirmed]);
 
-Swal.fire({
-
-  title:"Check your wallet to approve transaction",
-  didOpen: () => {
-    Swal.showLoading();
-  
-  },
-})
-  if (!address || !isConnected) {
-    alert("Please connect your wallet");
-    return;
-  }
-
-  await writeContractAsync({
-    abi:erc20Abi,
-    address:cBtc,
-    functionName:"approve",
-    args:[VAULT_MANAGER_CONFIG.address, rAmount.toString()]
-  })
-  
-  Swal.fire({
-
-    title:"Check your wallet to approve transaction",
-    didOpen: () => {
-      Swal.showLoading();
-    
-    },
-  })
-
-writeContract({
-...VAULT_MANAGER_CONFIG,
-functionName:"adjustReserve",
-args:[id,rAmount,false]
-})
-}catch(err){
-console.log(err)
-Swal.fire({
-  icon: "error",
-  title: "Something went wrong",
-  text: err?.shortMessage || err?.message,
-  footer: '<a href="#">Why do I have this issue?</a>'
-});
-
-}
-
-}; 
-useEffect(()=>{
-  if(isConfirmed){setOpen(true); Swal.close(); }
-},[isConfirmed])
   return (
     <>
       <div className="container mx-auto min-h-[80vh] my-10">
@@ -107,29 +90,40 @@ useEffect(()=>{
               Use the simulation on the right to determine the ideal deposit
               amount for you.
             </p>
-            <div>
-              <label className="text-sm font-medium">Deposit amount</label>
+            <div className="py-2">
+              <label className="text-sm font-medium">Reserve amount</label>
               <div className="relative mt-2 rounded-md shadow-sm">
                 <input
-                  type="Number"
-                  onChange={(e)=> setReserveAmount(e.currentTarget.value)}
+                  onChange={(e) => setReserveAmount(e.currentTarget.value)}
+                  type="number"
                   name="price"
                   id="price"
                   className="block w-full rounded-xl border-0 py-1.5 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                   placeholder="Enter a deposit amount"
+                  value={reserveAmount}
                 />
                 <div className="absolute px-4 inset-y-0 right-0 flex items-center">
                   cBTC
                 </div>
               </div>
-              <p className="text-sm my-4">Available: {balance} </p>
-              <button
-                onClick={handleDeposit}
-                className="mt-10 w-full bg-black text-white py-2 px-5 rounded-3xl"
-              >
-                Deposit reserves
-              </button>
+              <div className="mx-auto flex justify-between items-center">
+                <p className="text-sm my-4">
+                  Available: {balance ? balance : 0}
+                </p>
+                <button
+                  className="underline "
+                  onClick={() => setReserveAmount(balance!)}
+                >
+                  Max
+                </button>
+              </div>
             </div>
+            <button
+              onClick={handleDeposit}
+              className="mt-10 w-full bg-black text-white py-2 px-5 rounded-3xl"
+            >
+              Deposit reserves
+            </button>
           </div>
           <div className="col-span-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#F2F2F2] p-4 rounded-3xl justify-center">
@@ -186,7 +180,7 @@ useEffect(()=>{
                     <div className="my-4">
                       <p className="text-black text-sm">Reserves</p>
                       <p className="text-lg text-black font-medium">
-                       { formatEther(data?.[3]||"0") } sUSD
+                        {formatEther(data?.[3] || "0")} sUSD
                       </p>
                       <p className="text-black text-sm">
                         Currently: 30,000.1234 sUSD
@@ -195,10 +189,10 @@ useEffect(()=>{
                     <div className="my-4">
                       <p className="text-black text-sm">Reserve</p>
                       <p className="text-lg text-black font-medium">
-                      { formatEther(data?.[1]||"0") } cBTC
+                        {formatEther(data?.[1] || "0")} cBTC
                       </p>
                       <p className="text-black text-sm">
-                        Currently:  { formatEther(data?.[1]||"0") } cBTC
+                        Currently: {formatEther(data?.[1] || "0")} cBTC
                       </p>
                     </div>
                   </div>

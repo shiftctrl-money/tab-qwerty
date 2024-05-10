@@ -19,7 +19,7 @@ export const ListItem = ({ address, id }: { address: any; id: any }) => {
         </Link>
       </td>
       <td className="px-6 py-4">Sounds United States Dollar</td>
-      <td className="px-6 py-4"> </td>
+      <td className="px-6 py-4">180%</td>
       <td className="px-6 py-4">
         {data[3]} {tokenName}
       </td>

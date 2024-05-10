@@ -16,8 +16,9 @@ import { VAULT_MANAGER_CONFIG } from "@/app/helpers";
 import { erc20Abi, formatEther, parseEther } from "viem";
 import getVaultData from "@/hooks/getVaultData";
 import getTokenName from "@/hooks/getTokenName";
+import toast from "react-hot-toast";
 
-export default function Deposit({ params }) {
+export default function Deposit({ params }: { params: any }) {
   console.log(params.id);
   let { id } = params;
   const router = useRouter();
@@ -40,26 +41,18 @@ export default function Deposit({ params }) {
     hash,
   });
 
-  let cBtc = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
-  let rAmount = getAmountOut(cBtc, reserveAmount);
+  let cBTC = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
+  let rAmount = getAmountOut(cBTC, reserveAmount);
 
-  const data = getVaultData(address, id) || [];
+  const data: any = getVaultData(address, id) || [];
   console.log(data);
-  const balance = getBalanceOfToken(address, data[2]);
-
+  const balance = getBalanceOfToken(address || "", data[2]);
   const tokenName = getTokenName(data[2]);
-  console.log(tokenName);
-  console.log(error);
+
   const handleBurn = async () => {
     try {
-      Swal.fire({
-        title: "Check your wallet to approve transaction",
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
       if (!address || !isConnected) {
-        alert("Please connect your wallet");
+        toast.error("Please connect your wallet");
         return;
       }
 
@@ -67,7 +60,7 @@ export default function Deposit({ params }) {
         abi: erc20Abi,
         address: data[2],
         functionName: "approve",
-        args: [VAULT_MANAGER_CONFIG.address, rAmount.toString()],
+        args: [VAULT_MANAGER_CONFIG.address, BigInt(rAmount)],
       });
       writeContract({
         ...VAULT_MANAGER_CONFIG,
@@ -76,18 +69,12 @@ export default function Deposit({ params }) {
       });
     } catch (err) {
       console.log(err);
-      Swal.fire({
-        icon: "error",
-        title: "Something went wrong",
-        text: err?.shortMessage || err?.message,
-        footer: '<a href="#">Why do I have this issue?</a>',
-      });
+      toast.error("Something went wrong");
     }
   };
   useEffect(() => {
     if (isConfirmed) {
       setOpen(true);
-      Swal.close();
     }
   }, [isConfirmed]);
   return (
@@ -120,7 +107,7 @@ export default function Deposit({ params }) {
                   placeholder="Enter a burn amount"
                 />
                 <div className="absolute px-4 inset-y-0 right-0 flex items-center">
-                  cBTC
+                  {tokenName}
                 </div>
               </div>
               <p className="text-sm my-4">
@@ -198,10 +185,10 @@ export default function Deposit({ params }) {
                     <div className="my-4">
                       <p className="text-black text-sm">Reserve</p>
                       <p className="text-lg text-black font-medium">
-                        {formatEther(data?.[1] || "0")} 
+                        {formatEther(data?.[1] || "0")} cBTC
                       </p>
                       <p className="text-black text-sm">
-                        Currently: {formatEther(data?.[1] || "0")} 
+                        Currently: {formatEther(data?.[1] || "0")} cBTC
                       </p>
                     </div>
                   </div>

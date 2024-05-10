@@ -1,6 +1,19 @@
-export const CreateVaultCard = () => {
-  const data = false;
-
+export const CreateVaultCard = ({
+  data,
+}: {
+  data:
+    | {
+        tab: string;
+        reserveRatio: number;
+        riskPenalty: number;
+        liquidationRatio: number;
+        reserveType: string;
+        btcPrice: number;
+        reserveValue: number;
+        liquidationPrice: number;
+      }
+    | undefined;
+}) => {
   return (
     <>
       <div className="grid grid-cols-1 gap-4 w-full ">
@@ -11,24 +24,32 @@ export const CreateVaultCard = () => {
                 <div className="bg-[#708395] p-5 rounded-3xl flex flex-col justify-center">
                   <p className="text-white">Reserve Ratio</p>
                   <div className="flex mt-2">
-                    <p className="text-3xl text-white">{data ? 253 : "_"}% </p>
+                    <p className="text-3xl text-white">
+                      {data?.liquidationRatio ? data?.liquidationRatio : "_"}%{" "}
+                    </p>
                   </div>
                 </div>
-                {data ? (
+                {data?.reserveRatio &&
+                data?.riskPenalty &&
+                data?.liquidationRatio ? (
                   <div className="p-5">
                     <div className="my-2">
                       <p className="text-black text-sm">Reserve Ratio</p>
-                      <p className="text-lg text-black font-medium">257.38% </p>
+                      <p className="text-lg text-black font-medium">
+                        {data?.reserveRatio}%{" "}
+                      </p>
                     </div>
                     <div className="my-2">
                       <p className="text-black text-sm">Risk penalty</p>
                       <p className="text-lg text-black font-medium">
-                        2% per day{" "}
+                        {data?.riskPenalty}% per day{" "}
                       </p>
                     </div>
                     <div className="my-2">
                       <p className="text-black text-sm">Liquidation ratio</p>
-                      <p className="text-lg text-black font-medium">120% </p>
+                      <p className="text-lg text-black font-medium">
+                        {data?.liquidationRatio}%{" "}
+                      </p>
                     </div>
                   </div>
                 ) : (
@@ -45,22 +66,23 @@ export const CreateVaultCard = () => {
                   <p className="text-white">Liquidation price</p>
                   <div className="mt-2">
                     <p className="text-3xl text-white">
-                      {data ? 245 : "-"} sUSD
+                      {data?.liquidationPrice ? data?.liquidationPrice : "-"}{" "}
+                      sUSD
                     </p>
                   </div>
                 </div>
-                {data ? (
+                {data?.btcPrice && data?.reserveValue ? (
                   <div className="p-5">
                     <div className="my-2">
                       <p className="text-black text-sm">BTC price</p>
                       <p className="text-lg text-black font-medium">
-                        25,738 sUSD
+                        {data?.btcPrice} sUSD
                       </p>
                     </div>
                     <div className="my-2">
                       <p className="text-black text-sm">Reserve value</p>
                       <p className="text-lg text-black font-medium">
-                        25,738 sUSD
+                        {data?.reserveValue} sUSD
                       </p>
                     </div>
                   </div>
