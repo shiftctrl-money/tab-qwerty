@@ -26,10 +26,10 @@ const cBTC = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
 type cardsType = {
   tab: string;
   reserveRatio: number;
-  riskPenalty: number;
+  riskPenalty: string;
   liquidationRatio: number;
-  reserveType: string;
-  btcPrice: number;
+  reserveType: string | number;
+  btcPrice: string;
   reserveValue: number;
   liquidationPrice: number;
 };
@@ -62,42 +62,31 @@ export const CreateVaultForm = () => {
     hash,
   });
 
-  const getReserveParams = async (reserveKey: string) => {
-    return await publicClient.readContract({
-      ...CONFIG_CONTRACT,
-      functionName: "reserveParams",
-      args: ["0x00"],
-    });
-  };
+  const { data: reserveData }: { data: any } = useReadContract({
+    ...CONFIG_CONTRACT,
+    functionName: "reserveParams",
+    args: [reserveType],
+  });
 
-  const getTabData = async (tab: string) => {
-    console.log(tab);
-    return await publicClient.readContract({
-      ...CONFIG_CONTRACT,
-      functionName: "tabParams",
-      args: [tab],
-    });
-  };
+  const { data: tabData }: { data: any } = useReadContract({
+    ...CONFIG_CONTRACT,
+    functionName: "tabParams",
+    args: [tab],
+  });
+  console.log(tabData);
 
-  const getOracleOldPrice = async () => {
-    return await publicClient.readContract({
-      ...ORACLE_CONFIG,
-      functionName: "getOldPrice",
-    });
-  };
-
-  useEffect(() => {
-    async function call() {
-      console.log("oracle price", await getOracleOldPrice());
-    }
-    call();
-  }, [tabs]);
+  const { data: oraclePrice } = useReadContract({
+    ...ORACLE_CONFIG,
+    functionName: "getOldPrice",
+    args: [tab],
+  });
 
   const {
     tabList: tabCount,
     error: tabCountError,
     loading: isTabListLoading,
   } = useTabCount();
+  console.log(tabCount);
 
   const balance = getBalanceOfToken(address as Address, cBTC);
   const rAmount = getAmountOut(cBTC, reserveAmount);
@@ -111,8 +100,8 @@ export const CreateVaultForm = () => {
       }
       const tabAmountWei = parseEther(tabAmount);
       const balanceWei = balance ? parseEther(balance) : 0;
-
-      if (!balance || balanceWei < tabAmountWei) {
+      console.log(balance, balanceWei, tabAmountWei, rAmount);
+      if (!balance || balanceWei < rAmount) {
         toast.error("Not enough token balance!");
         return;
       }
@@ -160,17 +149,24 @@ export const CreateVaultForm = () => {
     }
     return result;
   }
-
   function setCardData() {
-    if (tab && +tabAmount > 0 && reserveType && +reserveAmount > 0) {
+    if (
+      tabData &&
+      tab &&
+      +tabAmount > 0 &&
+      reserveType &&
+      +reserveAmount > 0 &&
+      oraclePrice &&
+      reserveData
+    ) {
       setCardsData({
         tab: bytes3ToString(tab),
-        reserveRatio: 180,
-        riskPenalty: 2,
-        liquidationRatio: 120,
+        reserveRatio: reserveData[1].toString(),
+        riskPenalty: (Number(tabData[0]) / 100).toString(),
+        liquidationRatio: reserveData[2].toString(),
         reserveType: bytes3ToString(reserveType),
-        btcPrice: Number(getOracleOldPrice),
-        reserveValue: Number(getOracleOldPrice),
+        btcPrice: oraclePrice.toString(),
+        reserveValue: Number(oraclePrice),
         liquidationPrice: 120,
       });
     }
@@ -184,6 +180,8 @@ export const CreateVaultForm = () => {
   useEffect(() => {
     if (error || iserror) {
       console.log(error || iserror);
+      toast.dismiss();
+      toast.error(error?.message || "Something is wrong");
     }
   }, [error, iserror]);
 
@@ -196,6 +194,8 @@ export const CreateVaultForm = () => {
   useEffect(() => {
     if (hash) {
       setOpenSuccessModal(true);
+      toast.dismiss();
+      toast.success("Transaction has been successfully completed.");
     }
   }, [hash]);
 
@@ -365,7 +365,7 @@ export const CreateVaultForm = () => {
                     {tabAmount} {tab ? bytes3ToString(tab) : ""}
                   </p>
                   <p className="font-semibold	 py-2">
-                    {/* {configData?.minReserveRatio} */}
+                    {reserveData && reserveData[1].toString()} %
                   </p>
                   <p className="font-semibold	 py-2">
                     12,200.123456789012345678 sUSD
@@ -405,7 +405,7 @@ export const CreateVaultForm = () => {
             </p>
             <p className="text-center">
               <Link className="underline" href={"#"}>
-                View on ZkScan
+                View transaction
               </Link>
             </p>
           </div>
@@ -423,7 +423,7 @@ export const CreateVaultForm = () => {
             <p className="text-center">Vault 00000001 successfully created. </p>
             <p className="text-center">
               <Link className="underline" href={"#"}>
-                View on ZkScan
+                View transaction
               </Link>
             </p>
             <div>

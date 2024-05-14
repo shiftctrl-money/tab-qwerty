@@ -56,6 +56,7 @@ export default function Deposit({ params }: { params: any }) {
   }, [error]);
   const handleMint = async () => {
     try {
+      
       toast.loading("Check your wallet to approve transaction");
       if (!address || !isConnected) {
         toast.error("Please connect your wallet");
@@ -73,9 +74,18 @@ export default function Deposit({ params }: { params: any }) {
   };
   useEffect(() => {
     if (isConfirmed) {
+      toast.dismiss()
       setOpen(true);
     }
   }, [isConfirmed]);
+  useEffect(() => {
+    if (error || iserror) {
+      console.log(error || iserror);
+      toast.dismiss()
+      toast.error(error?.shortMessage)
+    }
+  }, [error, iserror]);
+
   return (
     <>
       <div className="container mx-auto min-h-[80vh] my-10">
@@ -252,7 +262,7 @@ export default function Deposit({ params }: { params: any }) {
                 <div className="items-center rounded-b">
                   <div className="flex justify-center my-2">
                     <Link
-                      href="#"
+                      href="/vault"
                       className="bg-black py-2 px-4 text-white rounded-3xl"
                       type="button"
                     >
@@ -262,7 +272,7 @@ export default function Deposit({ params }: { params: any }) {
                   <div className="flex justify-center my-2">
                     <button
                       className="text-black border-b-2 border-black"
-                      onClick={() => setOpen(false)}
+                      onClick={() =>{ setOpen(false); window.location.reload()}}
                     >
                       Close
                     </button>

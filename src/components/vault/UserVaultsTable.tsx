@@ -31,6 +31,10 @@ export const UserVaultsTable = () => {
     }
   }, [vaultList, userVaultList]);
 
+  const updateCurrentPage = (newPage: number) => {
+    setCurrentPage(Math.max(1, Math.min(newPage, totalPages)));
+  };
+
   return (
     <>
       <div className="flex justify-center">
@@ -148,7 +152,7 @@ export const UserVaultsTable = () => {
             <button
               className="relative h-8 max-h-[32px] w-8 max-w-[32px] select-none   text-center align-middle transition-all"
               type="button"
-              onClick={() => setCurrentPage(1)}
+              onClick={() => updateCurrentPage(1)}
             >
               <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                 <svg
@@ -174,7 +178,7 @@ export const UserVaultsTable = () => {
             <button
               className="relative h-8 max-h-[32px] w-8 max-w-[32px] select-none   text-center align-middle transition-all"
               type="button"
-              onClick={() => setCurrentPage(currentPage - 1)}
+              onClick={() => updateCurrentPage(currentPage - 1)}
             >
               <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                 <svg
@@ -198,7 +202,7 @@ export const UserVaultsTable = () => {
             <button
               className="relative h-8 max-h-[32px] w-8 max-w-[32px] select-none   text-center align-middle transition-all"
               type="button"
-              onClick={() => setCurrentPage(currentPage + 1)}
+              onClick={() => updateCurrentPage(currentPage + 1)}
             >
               <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                 <svg
@@ -218,7 +222,7 @@ export const UserVaultsTable = () => {
             <button
               className="relative h-8 max-h-[32px] w-8 max-w-[32px] select-none   text-center align-middle transition-all"
               type="button"
-              onClick={() => setCurrentPage(totalPages)}
+              onClick={() => updateCurrentPage(totalPages)}
             >
               <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                 <svg

@@ -22,8 +22,8 @@ export default function Deposit({ params }: { params: any }) {
 
   const { address, isConnected } = useAccount();
 
-  const { data: hash, writeContract } = useWriteContract();
-  const { isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+  const { data: hash, writeContract,error } = useWriteContract();
+  const { isSuccess: isConfirmed,error:iserror } = useWaitForTransactionReceipt({
     hash,
   });
 
@@ -52,11 +52,21 @@ export default function Deposit({ params }: { params: any }) {
       toast.error("Something went wrong");
     }
   };
+  
   useEffect(() => {
     if (isConfirmed) {
+      toast.dismiss()
       setOpen(true);
     }
   }, [isConfirmed]);
+  useEffect(() => {
+    if (error || iserror) {
+      console.log(error || iserror);
+      toast.dismiss()
+      toast.error(error?.shortMessage)
+    }
+  }, [error, iserror]);
+
   return (
     <>
       <div className="container mx-auto min-h-[80vh] my-10">
@@ -229,13 +239,13 @@ export default function Deposit({ params }: { params: any }) {
                     Reserves have been withdrawn successfully
                   </p>
                   <p className="my-4 text-blueGray-500 text-base leading-relaxed text-center">
-                    Lorem ipsum dolor sit amet
+                   
                   </p>
                 </div>
                 <div className="items-center rounded-b">
                   <div className="flex justify-center my-2">
                     <Link
-                      href="#"
+                      href="/vault"
                       className="bg-black py-2 px-4 text-white rounded-3xl"
                       type="button"
                     >
@@ -245,7 +255,7 @@ export default function Deposit({ params }: { params: any }) {
                   <div className="flex justify-center my-2">
                     <button
                       className="text-black border-b-2 border-black"
-                      onClick={() => setOpen(false)}
+                      onClick={() => {setOpen(false); window.location.reload()}}
                     >
                       Close
                     </button>

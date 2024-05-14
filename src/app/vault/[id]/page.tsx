@@ -228,7 +228,7 @@ const TableContent = () => {
                   href="#"
                   className="border-black border-b-2 text-black pb-1"
                 >
-                  View on zkscan
+                  View transaction
                 </Link>
               </td>
               <td className="px-6 py-4">
@@ -249,7 +249,7 @@ const TableContent = () => {
                   href="#"
                   className="border-black border-b-2 text-black pb-1"
                 >
-                  View on zkscan
+                  View transaction
                 </Link>
               </td>
               <td className="px-6 py-4">
@@ -270,7 +270,7 @@ const TableContent = () => {
                   href="#"
                   className="border-black border-b-2 text-black pb-1"
                 >
-                  View on zkscan
+                  View transaction
                 </Link>
               </td>
               <td className="px-6 py-4">
@@ -297,7 +297,7 @@ const TableContent = () => {
                   href="#"
                   className="border-black border-b-2 text-black pb-1"
                 >
-                  View on zkscan
+                  View transaction
                 </Link>
               </td>
               <td className="px-6 py-4">
@@ -320,7 +320,7 @@ const TableContent = () => {
                   href="#"
                   className="border-black border-b-2 text-black pb-1"
                 >
-                  View on zkscan
+                  View transaction
                 </Link>
               </td>
               <td className="px-6 py-4">

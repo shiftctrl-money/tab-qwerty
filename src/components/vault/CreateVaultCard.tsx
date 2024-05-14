@@ -5,10 +5,10 @@ export const CreateVaultCard = ({
     | {
         tab: string;
         reserveRatio: number;
-        riskPenalty: number;
+        riskPenalty: string;
         liquidationRatio: number;
-        reserveType: string;
-        btcPrice: number;
+        reserveType: string | number;
+        btcPrice: string;
         reserveValue: number;
         liquidationPrice: number;
       }
@@ -34,7 +34,7 @@ export const CreateVaultCard = ({
                 data?.liquidationRatio ? (
                   <div className="p-5">
                     <div className="my-2">
-                      <p className="text-black text-sm">Reserve Ratio</p>
+                      <p className="text-black text-sm">Min. Reserve Ratio</p>
                       <p className="text-lg text-black font-medium">
                         {data?.reserveRatio}%{" "}
                       </p>
