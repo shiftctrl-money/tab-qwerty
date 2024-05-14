@@ -9,6 +9,7 @@ export const useTabCount = () => {
   const { data: activatedTabs, error } = useReadContract({
     ...TAB_REGISTRY_CONFIG,
     functionName: "activatedTabCount",
+    args: [],
   });
 
   console.log(activatedTabs, error);

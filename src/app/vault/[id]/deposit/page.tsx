@@ -1,17 +1,14 @@
 "use client";
 import getAmountOut from "@/hooks/getAmountOut";
 import getBalanceOfToken from "@/hooks/getBalanceOfToken";
-import { Dialog, Transition } from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useAccount,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import Swal from "sweetalert2";
 import { VAULT_MANAGER_CONFIG } from "@/app/helpers";
 import { Address, erc20Abi, formatEther, parseEther } from "viem";
 import getVaultData from "@/hooks/getVaultData";

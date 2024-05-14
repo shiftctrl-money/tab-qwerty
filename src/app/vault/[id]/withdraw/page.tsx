@@ -1,24 +1,20 @@
 "use client";
 import getAmountOut from "@/hooks/getAmountOut";
 import getBalanceOfToken from "@/hooks/getBalanceOfToken";
-import { Dialog, Transition } from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useAccount,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import Swal from "sweetalert2";
 import { VAULT_MANAGER_CONFIG } from "@/app/helpers";
-import { erc20Abi, formatEther, parseEther } from "viem";
+import { formatEther } from "viem";
 import getVaultData from "@/hooks/getVaultData";
 import toast from "react-hot-toast";
 
 export default function Deposit({ params }: { params: any }) {
-  console.log(params.id);
   let { id } = params;
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
@@ -89,14 +85,25 @@ export default function Deposit({ params }: { params: any }) {
                   id="price"
                   className="block w-full rounded-xl border-0 py-1.5 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                   placeholder="Enter a withdraw amount"
+                  value={reserveAmount}
                 />
                 <div className="absolute px-4 inset-y-0 right-0 flex items-center">
                   cBTC
                 </div>
               </div>
-              <p className="text-sm my-4">
-                Available: {formatEther(data?.[1] || "0")} cBTC{" "}
-              </p>
+              <div className="mx-auto flex justify-between items-center">
+                <p className="text-sm my-4">
+                  Available: {formatEther(data?.[1] || "0")} cBTC{" "}
+                </p>
+                <button
+                  className="underline "
+                  onClick={() =>
+                    setReserveAmount(formatEther(data?.[1] || "0"))
+                  }
+                >
+                  Max
+                </button>
+              </div>
             </div>
             <button
               onClick={handleWithdraw}

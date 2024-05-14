@@ -239,7 +239,7 @@ export const CreateVaultForm = () => {
                     disabled
                     value={
                       //isTabListLoading ? "Loading Tabs..." : "No tabs found"
-                      "Loading Tabs"
+                      "Loading Tabs..."
                     }
                   />
                 )}
