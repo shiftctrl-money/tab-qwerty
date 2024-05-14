@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import getAllVaultIDByOwner from "@/hooks/getAllVaultsOfUser";
 import { ListItem } from "@/components/vault/list/ListItem";
 import { useEffect, useState } from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 export const UserVaultsTable = () => {
   const { address, isConnected } = useAccount();
   const userVaultList: any = getAllVaultIDByOwner(address);
@@ -67,15 +68,76 @@ export const UserVaultsTable = () => {
         ) : (
           <div className=" flex-row justify-center mt-[15%]">
             <div className="my-8">
-              <h1 className="text-3xl">You don’t have any vaults yet</h1>
+              <h1 className="text-3xl">
+                {!currentItems
+                  ? "You don’t have any vaults yet"
+                  : "You haven't connected to a wallet yet"}
+              </h1>
             </div>
             <div className="flex justify-center">
-              <Link
-                href={"/vault/create"}
-                className="px-5 py-2 border-[1px] text-white bg-black rounded-3xl border-black"
-              >
-                Create a new vault
-              </Link>
+              {!address ? (
+                <ConnectButton.Custom>
+                  {({
+                    account,
+                    chain,
+                    openAccountModal,
+                    openChainModal,
+                    openConnectModal,
+                    authenticationStatus,
+                    mounted,
+                  }) => {
+                    // Note: If your app doesn't use authentication, you
+                    // can remove all 'authenticationStatus' checks
+                    const ready = mounted && authenticationStatus !== "loading";
+                    const connected =
+                      ready &&
+                      account &&
+                      chain &&
+                      (!authenticationStatus ||
+                        authenticationStatus === "authenticated");
+
+                    return (
+                      <div
+                        {...(!ready && {
+                          "aria-hidden": true,
+                          style: {
+                            opacity: 0,
+                            pointerEvents: "none",
+                            userSelect: "none",
+                          },
+                        })}
+                      >
+                        {(() => {
+                          if (!connected) {
+                            return (
+                              <button
+                                className="px-5 py-2 border-[1px] text-white bg-black rounded-3xl border-black"
+                                onClick={openConnectModal}
+                                type="button"
+                              >
+                                Connect Wallet
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <div style={{ display: "flex", gap: 12 }}>
+                              Connected
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }}
+                </ConnectButton.Custom>
+              ) : (
+                <Link
+                  href={"/vault/create"}
+                  className="px-5 py-2 border-[1px] text-white bg-black rounded-3xl border-black"
+                >
+                  Create a new vault
+                </Link>
+              )}
             </div>
           </div>
         )}

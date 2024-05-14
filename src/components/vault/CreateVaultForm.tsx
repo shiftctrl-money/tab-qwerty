@@ -9,12 +9,16 @@ import { Address, erc20Abi, keccak256, parseEther, toBytes } from "viem";
 import getAmountOut from "@/hooks/getAmountOut";
 import getBalanceOfToken from "@/hooks/getBalanceOfToken";
 import { useTabCount } from "@/hooks/getTabCount";
-import { VAULT_MANAGER_CONFIG } from "@/app/helpers/index";
+import {
+  VAULT_MANAGER_CONFIG,
+  CONFIG_CONTRACT,
+  ORACLE_CONFIG,
+} from "@/app/helpers/index";
 import toast from "react-hot-toast";
 import { Modal } from "flowbite-react";
 import Link from "next/link";
 import { CreateVaultCard } from "./CreateVaultCard";
-import { flare } from "viem/chains";
+import { useReadContract } from "wagmi";
 
 const cBTC = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
 
@@ -57,10 +61,31 @@ export const CreateVaultForm = () => {
     hash,
   });
 
-  const { tabList: tabCount, error: tabCountError } = useTabCount();
+  const { data: configData } = useReadContract({
+    ...CONFIG_CONTRACT,
+    functionName: "reserveParams",
+    args: ["0x00"],
+  });
+
+  const { data: configTabData } = useReadContract({
+    ...CONFIG_CONTRACT,
+    functionName: "tabParams",
+    args: ["0x00"],
+  });
+
+  const { data: oracleOldPrice } = useReadContract({
+    ...ORACLE_CONFIG,
+    functionName: "getOldPrice",
+    args: ["tab"],
+  });
+
+  const {
+    tabList: tabCount,
+    error: tabCountError,
+    loading: isTabListLoading,
+  } = useTabCount();
 
   const balance = getBalanceOfToken(address as Address, cBTC);
-
   const rAmount = getAmountOut(cBTC, reserveAmount);
 
   const createVault = async () => {
@@ -121,6 +146,28 @@ export const CreateVaultForm = () => {
     }
     return result;
   }
+
+  function setCardData() {
+    if (
+      tab &&
+      +tabAmount > 0 &&
+      reserveType &&
+      +reserveAmount > 0 &&
+      configData
+    ) {
+      setCardsData({
+        tab: bytes3ToString(tab),
+        reserveRatio: configData.minReserveRatio,
+        riskPenalty: configTabData.riskPenaltyPerFrame,
+        liquidationRatio: configData.liquidationRatio,
+        reserveType: bytes3ToString(reserveType),
+        btcPrice: Number(oracleOldPrice),
+        reserveValue: Number(oracleOldPrice),
+        liquidationPrice: configData.liquidationRatio,
+      });
+    }
+  }
+
   useEffect(() => {
     if (isConfirmed)
       toast.success("Transaction has been successfully completed.");
@@ -131,21 +178,6 @@ export const CreateVaultForm = () => {
       console.log(error || iserror);
     }
   }, [error, iserror]);
-
-  function setCardData() {
-    if (tab && tabAmount && reserveType && reserveAmount) {
-      setCardsData({
-        tab: bytes3ToString(tab),
-        reserveRatio: 180,
-        riskPenalty: 2,
-        liquidationRatio: 120,
-        reserveType: bytes3ToString(reserveType),
-        btcPrice: 25738,
-        reserveValue: 25738,
-        liquidationPrice: 12000,
-      });
-    }
-  }
 
   useEffect(() => {
     if (tab && tabAmount && reserveType && reserveAmount) {
@@ -179,7 +211,7 @@ export const CreateVaultForm = () => {
             <div className="py-2">
               <label className="text-sm font-medium">Tab currency</label>
               <div className="relative mt-2 rounded-md shadow-sm">
-                {tabCount?.length > 0 ? (
+                {tabCount && tabCount?.length > 0 ? (
                   <>
                     <select
                       onChange={(e) => setTab(e.target.value)}
@@ -205,7 +237,10 @@ export const CreateVaultForm = () => {
                     type="text"
                     className="block w-full rounded-xl border-0 py-1.5 pl-4 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     disabled
-                    value={"Loading tab data...."}
+                    value={
+                      //isTabListLoading ? "Loading Tabs..." : "No tabs found"
+                      "Loading Tabs"
+                    }
                   />
                 )}
                 {tabCountError && <p>Error: {tabCountError.message}</p>}
@@ -321,7 +356,9 @@ export const CreateVaultForm = () => {
                   <p className="font-semibold	 py-2">
                     {tabAmount} {tab ? bytes3ToString(tab) : ""}
                   </p>
-                  <p className="font-semibold	 py-2">180%</p>
+                  <p className="font-semibold	 py-2">
+                    {/* {configData?.minReserveRatio} */}
+                  </p>
                   <p className="font-semibold	 py-2">
                     12,200.123456789012345678 sUSD
                   </p>
@@ -378,7 +415,7 @@ export const CreateVaultForm = () => {
             <p className="text-center">Vault 00000001 successfully created. </p>
             <p className="text-center">
               <Link className="underline" href={"#"}>
-                View on Zkscan
+                View on ZkScan
               </Link>
             </p>
             <div>

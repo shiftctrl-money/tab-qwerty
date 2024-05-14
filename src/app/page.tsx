@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Tabs } from "flowbite-react";
 import { customTabTheme } from "@/theme/CustomTabTheme";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Home() {
   return (
@@ -21,9 +22,60 @@ export default function Home() {
                 convallis ante eros.
               </p>
 
-              <button className="inline-flex items-center justify-center rounded-full bg-[#fff] px-7 py-[14px] text-center text-base font-medium text-[#000]">
-                Connect Wallet
-              </button>
+              <ConnectButton.Custom>
+                {({
+                  account,
+                  chain,
+                  openAccountModal,
+                  openChainModal,
+                  openConnectModal,
+                  authenticationStatus,
+                  mounted,
+                }) => {
+                  // Note: If your app doesn't use authentication, you
+                  // can remove all 'authenticationStatus' checks
+                  const ready = mounted && authenticationStatus !== "loading";
+                  const connected =
+                    ready &&
+                    account &&
+                    chain &&
+                    (!authenticationStatus ||
+                      authenticationStatus === "authenticated");
+
+                  return (
+                    <div
+                      {...(!ready && {
+                        "aria-hidden": true,
+                        style: {
+                          opacity: 0,
+                          pointerEvents: "none",
+                          userSelect: "none",
+                        },
+                      })}
+                    >
+                      {(() => {
+                        if (!connected) {
+                          return (
+                            <button
+                              className="inline-flex items-center justify-center rounded-full bg-[#fff] px-7 py-[14px] text-center text-base font-medium text-[#000]"
+                              onClick={openConnectModal}
+                              type="button"
+                            >
+                              Connect Wallet
+                            </button>
+                          );
+                        }
+
+                        return (
+                          <div style={{ display: "flex", gap: 12 }}>
+                            Connected
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  );
+                }}
+              </ConnectButton.Custom>
             </div>
           </div>
         </div>
