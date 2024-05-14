@@ -19,6 +19,7 @@ import { Modal } from "flowbite-react";
 import Link from "next/link";
 import { CreateVaultCard } from "./CreateVaultCard";
 import { useReadContract } from "wagmi";
+import { publicClient } from "@/utils/viemConfig";
 
 const cBTC = "0x5858c725d643Cde4Ec36e952cc965E4107898239";
 
@@ -61,23 +62,36 @@ export const CreateVaultForm = () => {
     hash,
   });
 
-  const { data: configData } = useReadContract({
-    ...CONFIG_CONTRACT,
-    functionName: "reserveParams",
-    args: ["0x00"],
-  });
+  const getReserveParams = async (reserveKey: string) => {
+    return await publicClient.readContract({
+      ...CONFIG_CONTRACT,
+      functionName: "reserveParams",
+      args: ["0x00"],
+    });
+  };
 
-  const { data: configTabData } = useReadContract({
-    ...CONFIG_CONTRACT,
-    functionName: "tabParams",
-    args: ["0x00"],
-  });
+  const getTabData = async (tab: string) => {
+    console.log(tab);
+    return await publicClient.readContract({
+      ...CONFIG_CONTRACT,
+      functionName: "tabParams",
+      args: [tab],
+    });
+  };
 
-  const { data: oracleOldPrice } = useReadContract({
-    ...ORACLE_CONFIG,
-    functionName: "getOldPrice",
-    args: ["tab"],
-  });
+  const getOracleOldPrice = async () => {
+    return await publicClient.readContract({
+      ...ORACLE_CONFIG,
+      functionName: "getOldPrice",
+    });
+  };
+
+  useEffect(() => {
+    async function call() {
+      console.log("oracle price", await getOracleOldPrice());
+    }
+    call();
+  }, [tabs]);
 
   const {
     tabList: tabCount,
@@ -148,22 +162,16 @@ export const CreateVaultForm = () => {
   }
 
   function setCardData() {
-    if (
-      tab &&
-      +tabAmount > 0 &&
-      reserveType &&
-      +reserveAmount > 0 &&
-      configData
-    ) {
+    if (tab && +tabAmount > 0 && reserveType && +reserveAmount > 0) {
       setCardsData({
         tab: bytes3ToString(tab),
-        reserveRatio: configData.minReserveRatio,
-        riskPenalty: configTabData.riskPenaltyPerFrame,
-        liquidationRatio: configData.liquidationRatio,
+        reserveRatio: 180,
+        riskPenalty: 2,
+        liquidationRatio: 120,
         reserveType: bytes3ToString(reserveType),
-        btcPrice: Number(oracleOldPrice),
-        reserveValue: Number(oracleOldPrice),
-        liquidationPrice: configData.liquidationRatio,
+        btcPrice: Number(getOracleOldPrice),
+        reserveValue: Number(getOracleOldPrice),
+        liquidationPrice: 120,
       });
     }
   }

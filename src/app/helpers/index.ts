@@ -1,7 +1,7 @@
 import TabRegistryAbi from "./abi/TabRegistry.json";
 import ProtocolVaultAbi from "./abi/ProtocolVault.json";
 import VaultManagerAbi from "./abi/VaultManager.json";
-import ConfigAbi from "./abi/VaultManager.json";
+import ConfigAbi from "./abi/Config.json";
 import OracleAbi from "./abi/PriceOracle.json";
 
 import { Address } from "viem";
