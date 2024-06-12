@@ -40,7 +40,7 @@ export default function Home() {
         <h1 className="text-center text-2xl">Popular tab currencies</h1>
         <PopularTabs />
       </section>
-      <section className="p-12 mx-8">
+      <section className="p-12 mx-8 overflow-x-visible flex flex-auto">
         <Tabs theme={customTabTheme} aria-label="Pills" style="pills">
           <Tabs.Item active title="All Tabs">
             <AllTabsTableContent tabs={AllTabs} />

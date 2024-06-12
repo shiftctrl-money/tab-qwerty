@@ -16,7 +16,8 @@ export const useTabCount = () => {
     async function fetchData() {
       try {
         const provider = new ethers.providers.JsonRpcProvider(
-          `https://arb-sepolia.g.alchemy.com/v2/${AlchemyKey}`
+          // `https://arb-sepolia.g.alchemy.com/v2/${AlchemyKey}`
+          `http://127.0.0.1:8545`
         );
         const tabContract = new ethers.Contract(
           TAB_REGISTRY_CONFIG.address,
