@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+td:first-child,
+tr:first-child {
+  border-radius: 20px 0 0 20px;
+}
+td:last-child,
+tr:last-child {
+  border-radius: 0 20px 20px 0;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  background: #fff !important;
+}
+input[type="checkbox"] {
+  accent-color: black;
+}
+input:focus,
+select:focus {
+  --tw-ring-color: none !important;
+  border: #000 !important;
+  /* outline: none !important; */
+  /* border: none; */
+  /* --tw-ring-color: transparent !important; */
+}
